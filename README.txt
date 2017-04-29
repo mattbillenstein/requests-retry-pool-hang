@@ -2,8 +2,7 @@ This is a testcase for the retry logic in requests/urllib3 that for me exhibits
 deadlocks under gevent.
 
 I've also included a version using system threads which exhibits the same
-behavior, but doesn't raise an exception -- it just deadlocks and the only way
-to see this is to watch it using strace.
+behavior, but doesn't raise an exception.
 
 To run this:
 
