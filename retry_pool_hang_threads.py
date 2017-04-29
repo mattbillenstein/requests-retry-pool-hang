@@ -1,10 +1,8 @@
 #!/usr/bin/env python2
 
-import gevent.monkey
-gevent.monkey.patch_all()
-
-import gevent
 import sys
+import threading
+import time
 import requests
 from requests.packages.urllib3.util import Retry
 
@@ -43,14 +41,22 @@ session = make_session()
 def worker():
     while 1:
         res = session.get(url, proxies=proxies)
+        sys.stdout.write('.')
+        sys.stdout.flush()
         assert res.status_code == 404
 
 def main():
     workers = []
     for i in xrange(10):
-        g = gevent.spawn(worker)
-        workers.append(g)
-    gevent.joinall(workers)
+        t = threading.Thread(target=worker)
+        t.daemon = True
+        workers.append(t)
+        t.start()
+
+    while 1:
+        time.sleep(3)
+        if all(not _.isAlive() for _ in workers):
+            break
 
 if __name__ == '__main__':
     main()

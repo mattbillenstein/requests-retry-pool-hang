@@ -1,12 +1,16 @@
 This is a testcase for the retry logic in requests/urllib3 that for me exhibits
 deadlocks under gevent.
 
+I've also included a version using system threads which exhibits the same
+behavior, but doesn't raise an exception -- it just deadlocks and the only way
+to see this is to watch it using strace.
+
 To run this:
 
 $ virtualenv foo
 $ source foo/bin/activate
 $ pip install -r requests-retry-pool-hang/requirements.txt
-$ time requests-retry-pool-hang/retry_pool_hang.py --retry
+$ time requests-retry-pool-hang/retry_pool_hang_gevent.py --retry
 
 Running with or without ssl/proxies all seem to produce the same result -- that
 supplying --retry causes a deadlock after a time:
