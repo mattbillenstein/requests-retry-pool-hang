@@ -9,12 +9,12 @@ To run this:
 $ virtualenv foo
 $ source foo/bin/activate
 $ pip install -r requests-retry-pool-hang/requirements.txt
-$ time requests-retry-pool-hang/retry_pool_hang_gevent.py --retry
+$ time requests-retry-pool-hang/retry_pool_hang_gevent.py --retry http://google.com/404
 
 Running with or without ssl/proxies all seem to produce the same result -- that
 supplying --retry causes a deadlock after a time:
 
-(foo) mattb@mattb-mbp2:~/src/requests-retry-pool-hang HEAD$ time ./retry_pool_hang.py --retry
+(foo) mattb@mattb-mbp2:~/src/requests-retry-pool-hang HEAD$ time ./retry_pool_hang.py --retry http://google.com/404
 Traceback (most recent call last):
   File "./retry_pool_hang.py", line 56, in <module>
     main()

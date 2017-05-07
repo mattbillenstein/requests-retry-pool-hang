@@ -8,13 +8,8 @@ import sys
 import requests
 from requests.packages.urllib3.util import Retry
 
-proxies = None
-if '--proxies' in sys.argv:
-    proxies = {'http': 'http://127.0.0.1:3128', 'https': 'http://127.0.0.1:3128'}
-
-url = 'http://google.com/404'
-if '--ssl' in sys.argv:
-    url = 'https://google.com/404'
+url = sys.argv[-1]
+assert url.startswith('http'), url
 
 def make_session():
     session = requests.Session()
@@ -23,14 +18,14 @@ def make_session():
     if '--retry' in sys.argv:
         retry = Retry(
             total = 3,
-            backoff_factor = 1.0,
+            backoff_factor = 0.1,
             raise_on_status = False,
             status_forcelist = [404],
         )
 
     request_adapter = requests.adapters.HTTPAdapter(
-        pool_maxsize = 200,
-        pool_connections = 200,
+        pool_maxsize = 50,
+        pool_connections = 10,
         pool_block = True,
         max_retries = retry,
     )
@@ -42,10 +37,10 @@ session = make_session()
 
 def worker():
     while 1:
-        res = session.get(url, proxies=proxies)
+        res = session.get(url)
+        assert res.status_code == 404
         sys.stdout.write('.')
         sys.stdout.flush()
-        assert res.status_code == 404
 
 def main():
     workers = []
